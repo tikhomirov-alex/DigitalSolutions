@@ -2,7 +2,6 @@ export type Item = {
     value: number;
     isSelected: boolean;  // Состояние выбора
     sortPosition: number;  // Позиция для сортировки
-    sortOffset: number; // Смещение сортировки
 };
 
 export interface GetItemsRequest {
@@ -17,5 +16,5 @@ export interface SelectItemsRequest {
 }
 
 export interface SortItemsRequest {
-    sortedItems: number[]; // массив значений в новом порядке
+    sortedItems: Item[];
 }

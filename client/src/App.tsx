@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableItem from './SortableItem';
 import { Item } from './types';
 import '../index.css';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 const App: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -53,7 +53,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSortEnd = async (sortedItems: number[]) => {
+  const handleSortEnd = async (sortedItems: Item[]) => {
     try {
       await axios.post('/api/items/sort', { sortedItems });
     } catch (error) {
@@ -61,16 +61,17 @@ const App: React.FC = () => {
     }
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setItems((prevItems) => {
-        const oldIndex = prevItems.findIndex((item) => item.value === active.id);
-        const newIndex = prevItems.findIndex((item) => item.value === over.id);
+        const oldIndex = prevItems.findIndex((item) => item.value === Number(active.id));
+        const newIndex = prevItems.findIndex((item) => item.value === Number(over.id));
         const newItems = arrayMove(prevItems, oldIndex, newIndex);
 
-        handleSortEnd(newItems.map((item) => item.value));
+        handleSortEnd(newItems);
+
         return newItems;
       });
     }

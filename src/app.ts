@@ -12,11 +12,10 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-const items: Item[] = Array.from({ length: 100 }, (_, i) => ({
+const items: Item[] = Array.from({ length: 1000000 }, (_, i) => ({
     value: i + 1,
     isSelected: false,
-    sortPosition: i + 1,
-    sortOffset: 0
+    sortPosition: i + 1
 }));
 
 app.get('/api/items', (req: Request<{}, {}, {}, GetItemsRequest>, res: Response<Item[]>) => {
@@ -26,17 +25,13 @@ app.get('/api/items', (req: Request<{}, {}, {}, GetItemsRequest>, res: Response<
         search = ''
     } = req.query;
 
-    // Преобразование параметров в числа
     const parsedLimit = Number(limit);
     const parsedOffset = Number(offset);
 
-    // Фильтрация по поисковому запросу
     let filteredItems = items.filter(item => item.value.toString().includes(search));
 
-    // Сортировка
-    const sortedItems = filteredItems.sort((a, b) => (a.sortPosition + a.sortOffset) - (b.sortPosition + b.sortOffset));
+    const sortedItems = filteredItems.sort((a, b) => a.sortPosition - b.sortPosition);
 
-    // Пагинация
     const paginatedItems = sortedItems.slice(parsedOffset, parsedOffset + parsedLimit);
 
     res.json(paginatedItems);
@@ -57,12 +52,15 @@ app.post('/api/items/select', (req: Request<{}, {}, SelectItemsRequest>, res: Re
 app.post('/api/items/sort', (req: Request<{}, {}, SortItemsRequest>, res: Response) => {
     const { sortedItems } = req.body;
 
-    sortedItems.forEach((value, index) => {
-        const item = items.find(item => item.value === value);
-        if (item) {
-            item.sortPosition = index;
+    const positions = sortedItems.map(i => i.sortPosition).sort((a, b) => a - b);
+
+    sortedItems.forEach((sortedItem, index) => {
+        const originalItem = items.find(item => item.value === sortedItem.value);
+        if (originalItem) {
+            originalItem.sortPosition = positions[index];
         }
     });
+
     res.sendStatus(204);
 });
 
