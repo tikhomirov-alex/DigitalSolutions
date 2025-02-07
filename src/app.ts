@@ -52,6 +52,8 @@ app.post('/api/items/select', (req: Request<{}, {}, SelectItemsRequest>, res: Re
 app.post('/api/items/sort', (req: Request<{}, {}, SortItemsRequest>, res: Response) => {
     const { sortedItems } = req.body;
 
+    console.log(sortedItems);
+
     const positions = sortedItems.map(i => i.sortPosition).sort((a, b) => a - b);
 
     sortedItems.forEach((sortedItem, index) => {

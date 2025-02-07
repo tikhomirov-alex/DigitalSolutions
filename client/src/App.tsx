@@ -70,7 +70,9 @@ const App: React.FC = () => {
         const newIndex = prevItems.findIndex((item) => item.value === Number(over.id));
         const newItems = arrayMove(prevItems, oldIndex, newIndex);
 
-        handleSortEnd(newItems);
+        const startIndex = Math.min(oldIndex, newIndex);
+        const endIndex = Math.max(oldIndex, newIndex) + 1;
+        handleSortEnd(newItems.slice(startIndex, endIndex));
 
         return newItems;
       });
