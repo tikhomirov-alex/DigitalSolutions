@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "dev": "nodemon -w src --ext ts --exec ts-node src/app.ts"
+    "build": "concurrently \"npm run build:back\" \"npm run build:front\"",
+    "build:back": "tsc",
+    "build:front": "npm run build --prefix client",
+    "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\"",
+    "dev:back": "nodemon -w src --ext ts --exec ts-node src/app.ts",
+    "dev:front": "npm start --prefix client",
+    "start": "concurrently \"npm run start:back\" \"npm run start:front\"",
+    "start:back": "node dist/app.js",
+    "start:front": "npm run serve --prefix client"
   },
   "keywords": [],
   "author": "Tikhomirov Alexander <av-tikhomiroff@yandex.ru>",
@@ -16,6 +22,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.1",
+    "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
