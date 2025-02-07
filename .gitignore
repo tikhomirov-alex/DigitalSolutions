@@ -1,0 +1,13 @@
+# Node.js
+node_modules
+*/node_modules/
+package-lock.json
+*/package-lock.json
+dist
+*/dist/
+
+# Среда разработки
+.vscode/
+
+# Персональные файлы конфигурации
+.env
